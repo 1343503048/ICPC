@@ -7,7 +7,8 @@ bool vis[MAX];
 
 int dfs(int s, int t) {
 	vis[s] = true;
-	for(map<int, int>::iterator it = e[s].begin(); it != e[s].end(); ++ it) {
+	map<int, int>::iterator it;
+	for(it = e[s].begin(); it != e[s].end(); ++ it) {
 		int to = it->first, w = it->second;
 		if(!vis[to]) {
 			if(to == t) {
