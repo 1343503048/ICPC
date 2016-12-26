@@ -2,7 +2,7 @@
 using namespace std;
 const int MAX = 30000+5;
 
-int f[MAX], num[MAX], dist[MAX];
+int f[MAX], num[MAX], dist[MAX];   //num为当前堆的积木数量，dist为当前积木下的积木数量
 
 int find(int x) {
 	if(f[x] == x) {
@@ -38,7 +38,8 @@ int main(){
 			int a, b;
 			cin >> ch;
 			if(ch == 'C') {
-				cin >> a;
+				cin >> a;    
+				find(a);  //在输出结果前再次压缩路径
 				cout << dist[a] << endl;
 			}
 			else {
