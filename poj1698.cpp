@@ -1,5 +1,5 @@
 //此问题为求二分图的多重匹配
-//将其转化为求最大流问题，用EK算法求解
+//将其转化为求最大流问题，用Ford-Fulkerson算法求解
 //s = 0为源点， t = 371为汇点
 #include <iostream>
 #include <vector>
