@@ -54,16 +54,12 @@ int FF(int s, int t)
 {
     int f = 0;
     int flow = 0;
-    while(1)
-    {
+    do {
         memset(vis, false, sizeof(vis));
         f = dfs(s, t, INF);
-        if(f == 0)
-        {
-            return flow;
-        }
         flow += f;
-    }
+    }while(f > 0);
+    return flow;
 }
 
 int main()
