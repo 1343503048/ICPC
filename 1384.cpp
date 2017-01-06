@@ -1,3 +1,4 @@
+//http://www.cnblogs.com/wushuaiyi/p/3704187.html
 //差分约束
 #include <bits/stdc++.h>
 using namespace std;
