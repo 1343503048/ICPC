@@ -7,13 +7,15 @@ vector<int> e[MAX];
 int in[MAX], money[MAX]; //jilujiangjin
 
 void topSort(int n) {
-	queue<int> Q;
+	queue<int> Q;	//注意此处使用队列，因为是求最小值，所以只有当排在叫前面的点出队时才能让一个值竟可能的小
+	//比如有1--->3、2-->4 和 3--->4三个条件,如果用栈的话4会为3的等级+1，假设1为888,那么显然3
+	//为889,而2为888，那么此时4就为890;如果用队列的话4就是889；
 	int sum = 0;
 	for(int i = 1; i <= n; ++ i) {
 		if(in[i] == 0) {
 			Q.push(i);
 			money[i] = 888;
-		}
+	}
 	}
 	while(!Q.empty()) {
 		int t = Q.front();
