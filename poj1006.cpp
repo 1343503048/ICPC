@@ -7,15 +7,13 @@ int exgcd(int a, int b, int &x, int &y) {
 		x = 1, y = 0;
 		return a;
 	}
-	int ans = exgcd(b, a % b, x, y);
-	int t = x;
-	x = y;
-	y = t - a / b * y;
+	int ans = exgcd(b, a % b, y, x);
+	y -= a / b * x;
 	return ans;
 }
 
 int main(int argc, char const *argv[]) {
-	ifstream cin("data.in");
+	//ifstream cin("data.in");
 	int p, e, i, d, cnt = 1, x, y;
 	while(cin >> p >> e >> i >> d && p != -1) {
 		int MI = 23 * 28 * 33;
