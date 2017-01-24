@@ -1,8 +1,9 @@
+//http://www.cnblogs.com/zyf0163/p/4749042.html
 #include <bits/stdc++.h>
 using namespace std;
 const int N = 100000+5;
 int a[N], b[N];
-int rt[N*20], ls[N*20], rs[N*20], sum[N*20];
+int rt[N], ls[N*20], rs[N*20], sum[N*20];
 int tot;
 
 void build(int &o, int l, int r) {
