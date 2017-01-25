@@ -15,7 +15,6 @@ struct node {
 	}
 };
 
-node *q[N];
 node *root;
 
 void insert(char *s) {
