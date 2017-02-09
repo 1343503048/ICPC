@@ -4,9 +4,9 @@
 #include <iomanip>
 #include <cstdio>
 using namespace std;
-double l[10005];
+int l[10005];
 
-bool isOk(double li, int n, int k) {
+bool isOk(int li, int n, int k) {
 	int cnt = 0;
 	for(int i = 0; i < n; ++ i) {
 		cnt += (int)(l[i]/li);
@@ -18,19 +18,21 @@ int main() {
 	int n, k;
 	while(~scanf("%d%d", &n, &k)) {
 		for(int i = 0; i < n; ++ i) {
-			scanf("%lf", l+i);
+			double temp;
+			scanf("%lf", &temp);
+			l[i] = 100*temp;
 		}
-		double left = 0, right = 100000;
-		for(int i = 0; i < 100; ++ i) {
-			double mid = (left + right) / 2.0;
+		int left = 1, right = 10000000;
+		while(left <= right) {
+			int mid = (left + right) / 2;
 			if(isOk(mid, n, k)) {
-				left = mid;
+				left = mid+1;
 			}
 			else {
-				right = mid;
+				right = mid-1;
 			}
 		}
-		printf("%.2f\n", floor(right*100) / 100);
+		printf("%.2f\n", right / 100.0);
 	}
 	return 0;
 }
