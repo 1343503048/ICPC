@@ -17,7 +17,7 @@ int main(int argc, char const *argv[]) {
 	int p, e, i, d, cnt = 1, x, y;
 	while(cin >> p >> e >> i >> d && p != -1) {
 		int MI = 23 * 28 * 33;
-		exgcd(MI / 23, 23, x, y);
+		exgcd(MI / 23, 23, x, y);		//x为逆元
 		int a = x;
 		exgcd(MI / 28, 28, x, y);
 		int b = x;
