@@ -19,6 +19,7 @@ void init() {
 		}
 	}
 
+	// f(k) = a(i) * k ^ i;
 	for(i = 0; i < n; ++ i) {
 		k = 1;
 		for(j = 0; j < n; ++ j) {
