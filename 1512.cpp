@@ -21,7 +21,7 @@ int merge(int u, int v) {
 		swap(node[u].l, node[u].r);
 	}
 	if(node[u].r == 0) {
-		node[u].dist = 0;
+		node[u].dist = 0;  //距离为右子树的距离家1，当右子树为空时dist=0.	
 	}
 	else {
 		node[u].dist = node[node[u].r].dist + 1;
@@ -29,7 +29,7 @@ int merge(int u, int v) {
 	return u;
 }
 
-int find(int x) {
+int find(int x) {		   //寻找根
 	if(node[x].dad != x) {
 		node[x].dad = find(node[x].dad);
 	}

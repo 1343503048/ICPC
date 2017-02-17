@@ -50,7 +50,7 @@ void spfa(int s) {
 				continue;
 			}
 			if(g[u][i].v == INT_MAX) {
-				g[u][i].v = -g[i][u].v;
+				g[u][i].v = -g[i][u].v;    //逆向费用
 			}
 			if(dist[i] > dist[u] + g[u][i].v) {
 				dist[i] = dist[u] + g[u][i].v;
