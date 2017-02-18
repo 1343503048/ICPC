@@ -2,6 +2,7 @@
 // polay
 #include <iostream>
 #include <cmath>
+#include <cstdio>
 using namespace std;
 
 int gcd(int a, int b) {
@@ -16,12 +17,12 @@ int polay_circle(int c, int s) {
 	}
 	// 翻转
 	if(s & 1) {	//奇数时只存在一种,(穿过一个珠子为对角线)
-		ans += s * pow(c, s<<1|1);
+		ans += s * pow(c, s/2 + 1);
 	}
 	else {	// 偶数时存在两种(分别为转过0个珠子为对角线和穿过两个珠子为对角线)
-		ans += (pow(c, s<<1) + pow(c, s<<1|1)) * s / 2;
+		ans += (pow(c, s/2) + pow(c, s/2+1)) * s / 2;
 	}
-	return ans / (n * 2);
+	return ans / (s * 2);
 }
 
 int main() {
