@@ -27,7 +27,7 @@ ll com(ll n, ll m, ll p) {
 	if(n < m) {
 		return 0;
 	}
-	return (f[n] * pow_mod((f[n-m] * f[m])%p, p-2, p)) % p; //(f[n-m] * f[m])^(p-2) = f[n-m] ^ (p-1) * f[m] ^ (p-1)
+	return (f[n] * pow_mod((f[n-m] * f[m])%p, p-2, p)) % p; //x^(p-1) = 1(modp) = x * x ^(p-2) = 1(modp)
 }
 
 ll lucas(ll n, ll m, ll p) {
