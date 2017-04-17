@@ -77,12 +77,12 @@ int main() {
 	}
 
 	double ans = 0;
-	for(int i = 0; i <= top; ++ i) {
-    	    int a = stack[(i+1)%(top+1)];
+	for(int i = 1; i < top; ++ i) {
+    	    int a = stack[i+1];
 	    int b = stack[i];
-	    ans += 0.5 * (list[a].x * list[b].y - list[a].y * list[b].x);  //计算面积
+	    ans += 0.5 * fabs(1.0 * cross(list[0], list[a], list[b]));  //计算面积
 	}
-	cout << (int)(-ans / 50.0) << "\n";	
+	cout << (int)(ans / 50.0) << "\n";	
     }
     return 0;
 }
