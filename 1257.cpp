@@ -36,7 +36,7 @@ int main(int argc, char const *argv[]) {
 			}
 			else {
 				int j = lower_bound(dp, dp+loc, height[i]) - dp;
-				dp[j] = min(height[i], dp[j]);
+				dp[j] = height[i];
 			}
 		}
 		printf("%d\n", loc+1);
