@@ -13,7 +13,7 @@ typedef long long ll;
 
 int n, m, k;
 
-// calu A * b
+// calu A * B
 mat mul(mat &A, mat &B) {
 	mat c(A.size(), vec(B[0].size()));
 	for(int i = 0; i < A.size(); ++ i) {
