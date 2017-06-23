@@ -27,6 +27,8 @@ ll com(ll n, ll m, ll p) {
 	if(n < m) {
 		return 0;
 	}
+	// c(n, m) = n! / ((n-m)! * m!)  
+	// 然后求((n-m)!*m!)的逆元
 	return (f[n] * pow_mod((f[n-m] * f[m])%p, p-2, p)) % p; //x^(p-1) = 1(modp) = x * x ^(p-2) = 1(modp)
 }
 
