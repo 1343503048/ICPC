@@ -1,174 +1,186 @@
-//#pragma comment(linker, "/STACK:1024000000, 1024000000")
-#include <iostream>
-#include <vector>
-#include <cstring>
-#include <algorithm>
-#include <cstdio>
-using namespace std;
-const int N = 50000+10;
 
-int num[N], siz[N]; //保存子树节点个数
-int top[N], son[N];	//用来保存当前节所在链的顶端节点和重儿子
-int dep[N];			//保存当前节点深度
-int tid[N];			//保存树中每个节点剖分后的新编号
-int Rank[N];		//节点在线段树中的位置
-int fa[N];			//父节点
-int head[N], to[N<<1], Next[N<<1], edge;
-int n, m, Q;
-int tim;
+/***********************************************************
+   
+        FileName：3966.cpp
+          Author：zQ
+           Email: zq216991@foxmail.com
+          Create：2017-08-07 16:34:56
+    Descripttion：树链剖分+线段树
+   
+*************************************************************/
+
+#include <bits/stdc++.h>
+using namespace std;
+const int N = 50000+5;
+
+struct Edge{
+    int to, next;
+};
+
+Edge e[N<<1];
+int add[N<<2], v[N<<2];
+int head[N];
+int Rank[N];     // rank[i]代表编号为i的节点所对应的原始节点
+int tid[N];      // tid[i]代表节点i的编号
+int dep[N], f[N];
+int sz[N];       // 子节点的数量
+int son[N], tp[N];
+int cnt[N];
+int tot, id;
 
 void init() {
-	memset(head, -1, sizeof(head));
-	memset(son, -1, sizeof(son));
-	tim = 0;
-	edge = 0;
+    tot = id = 0;
+    memset(head, 0, sizeof(head));
+    memset(son, -1, sizeof(son));
+    dep[1] = 0;
 }
 
 void addEdge(int u, int v) {
-	to[edge] = v, Next[edge] = head[u], head[u] = edge++;
-	to[edge] = u, Next[edge] = head[v], head[v] = edge++;
+    e[++tot] = Edge{v, head[u]};
+    head[u] = tot;
+    e[++tot] = Edge{u, head[v]};
+    head[v] = tot;
 }
 
-//树链剖分
-//dfs1(1, 0, 0)
-void dfs1(int u, int f, int d) {
-	dep[u] = d;
-	fa[u] = f;
-	siz[u] = 1;
-	for(int i = head[u]; i != -1; i = Next[i]) {
-		int v = to[i];
-		if(v != f) {
-			dfs1(v, u, d+1);
-			siz[u] += siz[v];
-			if(son[u] == -1 || siz[v] > siz[son[u]]) {//重边
-				son[u] = v;
-			}
-		}
-	}
+// 树链剖分部分
+void dfs1(int u) {
+    sz[u] = 1;
+    for(int i = head[u]; i; i = e[i].next) {
+        int to = e[i].to;
+        if(to == f[u]) continue;
+        f[to] = u;
+        dep[to] = dep[u] + 1;
+        dfs1(to);
+        sz[u] += sz[to];
+        if(son[u] == -1 || sz[son[u]] < sz[to]) {
+            son[u] = to;
+        }
+    }
 }
 
-//dfs2(1, 1)
-void dfs2(int u, int tp) {
-	top[u] = tp;
-	tid[u] = ++ tim;		//给每个节点都编号
-	Rank[tid[u]] = u;		//位置tim上为u, u 与 tim相互映射
-	if(son[u] == -1) {	//到达叶子节点
-		return ;
-	}
-	dfs2(son[u], tp);		//重边
-	for(int i = head[u]; i != -1; i = Next[i]) {
-		int v = to[i];
-		if(v != son[u] && v != fa[u]) {
-			dfs2(v, v);
-		}
-	}
+void dfs2(int u, int top) {
+    tp[u] = top;
+    tid[u] = ++ id; 
+    Rank[id] = u; 
+    if(son[u] == -1) {
+        return ;
+    }
+    dfs2(son[u], top);   // 重边
+    for(int i = head[u]; i; i = e[i].next) {
+        int to = e[i].to;
+        if(to == f[u] || to == son[u]) continue;
+        dfs2(to, to);
+    }
 }
 
-int sum[N<<2], col[N<<2];
-
-void pushUp(int root) {
-	sum[root] = sum[root<<1] + sum[root<<1|1];
+// 线段树维护
+void ctag(int rt, int x) {
+    v[rt] += x;
+    add[rt] += x;
 }
 
-void pushDown(int root, int m) {
-	if(col[root]) {
-		col[root<<1] += col[root];
-		col[root<<1|1] += col[root];
-		sum[root<<1] += (m-(m>>1)) * col[root];
-		sum[root<<1|1] += (m>>1)*col[root];
-		col[root] = 0;
-	}
+void pushDown(int rt) {
+    if(add[rt] != 0) {
+        ctag(rt<<1, add[rt]);
+        ctag(rt<<1|1, add[rt]);
+        add[rt] = 0;
+    }
 }
 
-void build(int l, int r, int root) {
-	col[root] = 0;
-	if(l == r) {
-		sum[root] = num[Rank[l]];
-		return ;
-	}
-	int m = (l+r) >> 1;
-	build(l, m, root<<1);
-	build(m+1, r, root<<1|1);
-	pushUp(root);
+void build(int rt, int l, int r) {
+    add[rt] = 0;
+    v[rt] = 0;
+    if(l == r) {
+        v[rt] = cnt[Rank[l]];
+        return ;
+    }
+    int mid = (l + r) >> 1;
+    build(rt<<1, l, mid);
+    build(rt<<1|1, mid+1, r);
 }
 
-void update(int L, int R, int v, int l, int r, int root) {
-	if(L <= l && R >= r) {
-		col[root] += v;
-		sum[root] += v * (r-l+1);
-		return ;
-	}
-	pushDown(root, r-l+1);
-	int m = (l+r) >> 1;
-	if(L <= m) {
-		update(L, R, v, l, m, root<<1);
-	}
-	if(R > m) {
-		update(L, R, v, m+1, r, root<<1|1);
-	}
-	pushUp(root);
+void update(int rt, int l, int r, int a, int b, int x) {
+    if(a <= l && r <= b) {
+        v[rt] += x;
+        add[rt] += x;
+        return ;
+    }
+    pushDown(rt);
+    int mid = (l + r) >> 1;
+    if(a <= mid) {
+        update(rt<<1, l, mid, a, b, x);
+    }
+    if(b > mid) {
+        update(rt<<1|1, mid+1, r, a, b, x);
+    }
 }
 
-int query(int l, int r, int root, int val) {
-	if(l == r) {
-		return sum[root];
-	}
-	pushDown(root, r-l+1);
-	int m = (l+r) >> 1;
-	int ret = 0;
-	if(val <= m) {
-		ret = query(l, m, root<<1, val);
-	}
-	else {
-		ret = query(m+1, r, root<<1|1, val);
-	}
-	pushUp(root);
-	return ret;
+int query(int rt, int l, int r, int pos) {
+    if(l == r) {
+        return v[rt];
+    }  
+    pushDown(rt);
+    int mid = (l + r) >> 1;
+    if(pos <= mid) {
+        return query(rt<<1, l, mid, pos);
+    }
+    else {
+        return query(rt<<1|1, mid+1, r, pos);
+    }
 }
 
-void change(int x, int y, int val) {
-	while (top[x] != top[y]) {
-		if(dep[top[x]] < dep[top[y]]) {
-			swap(x, y);
-		}
-		update(tid[top[x]], tid[x], val, 1, n, 1);
-		x = fa[top[x]];
-	}
-	if(dep[x] > dep[y]) {
-		swap(x, y);
-	}
-	update(tid[x], tid[y], val, 1, n, 1);
+void change(int n, int a, int b, int x) {
+    while(tp[a] != tp[b]) {
+        if(dep[tp[a]] > dep[tp[b]]) {
+            swap(a, b);
+        }
+         
+        update(1, 1, n, tid[tp[b]], tid[b], x);
+        b = f[tp[b]];
+    }
+    if(dep[a] > dep[b]) {
+        swap(a, b);
+    }
+    update(1, 1, n, tid[a], tid[b], x);
 }
 
-int main(int argc, char const *argv[]) {
-	char oper[5];
-	int a, b, c;
-	while(~scanf("%d%d%d", &n, &m, &Q)) {
-		init();
-		for (int i = 1; i <= n; ++i) {
-			scanf("%d", num+i);
-		}
-		for (int i = 1; i <= m; ++i) {
-			scanf("%d%d", &a, &b);
-			addEdge(a, b);
-		}
-		dfs1(1, 0, 0);
-		dfs2(1, 1);
-		build(1, n, 1);
-		while(Q --) {
-			scanf("%s", oper);
-			if(oper[0] == 'Q') {
-				scanf("%d", &a);
-				printf("%d\n", query(1, n, 1, tid[a]));
-			}
-			else {
-				scanf("%d%d%d", &a, &b, &c);
-				if(oper[0] == 'D') {
-					c = -c;
-				}
-				change(a, b, c);
-			}
-		}
-	}
-	return 0;
+int main() {
+    std::ios::sync_with_stdio(false);
+    std::cin.tie(0);
+    int n, m, p;
+    while(cin >> n >> m >> p) {
+        init();
+        for(int i = 1; i <= n; ++ i) {
+            cin >> cnt[i];
+        }
+        
+        for(int i = 0; i < m; ++ i) {
+            int x, y;
+            cin >> x >> y;
+            addEdge(x, y);
+        }
+
+        dfs1(1);
+        dfs2(1, 1);
+
+        build(1, 1, n);
+        while(p --) {
+            char op[5];
+            cin >> op;
+            if(op[0] == 'Q') {
+                int a;
+                cin >> a;
+                cout << query(1, 1, n, tid[a]) << "\n";
+            }
+            else {
+                int a, b, c;
+                cin >> a >> b >> c;
+                if(op[0] == 'D') {
+                    c = -c; 
+                }
+                change(n, a, b, c);
+            }
+        }
+    }
+    return 0;
 }
