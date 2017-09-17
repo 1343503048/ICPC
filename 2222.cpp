@@ -35,12 +35,13 @@ void insert() {
     ++ cnt[cur];
 }
 
+int q[N];
 void build() {
-    queue<int> Q;
-    Q.push(1);
-    while(!Q.empty()){
-        int cur = Q.front();
-        Q.pop();
+    int l = 0; 
+    int r = 0;
+    q[r++] = 1;
+    while(l < r){
+        int cur = q[l++];
         for(int i = 0; i < 26; ++ i) {
             if(np[cur][i] == 0) continue;
             if(cur == 1) {
@@ -59,7 +60,7 @@ void build() {
                     fail[np[cur][i]] = 1;
                 }
             }
-            Q.push(np[cur][i]);
+            q[r++] = np[cur][i];
         }
     }
 }
@@ -79,8 +80,9 @@ void query() {
         }
         int tmp = cur;
         while(tmp != 1) {
+            if(cnt[tmp] == -1) break;
             res += cnt[tmp];
-            cnt[tmp] = 0;
+            cnt[tmp] = -1;   // 防止重复计数
             tmp = fail[tmp];
         }
     }
