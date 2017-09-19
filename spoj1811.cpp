@@ -12,15 +12,12 @@
 
 #include <bits/stdc++.h>
 using namespace std;
-const int N = 500000;
+const int N = 250000;
 
-struct State{
-    int pre, go[26];
-    int step;
-};
-
+int go[N][26];
+int pre[N];
+int step[N];
 int rt, last;
-State ret[N];
 int cur;
 
 void init() {
@@ -31,29 +28,29 @@ void init() {
 void insert(int w) {
     int p = last;
     int np = cur ++;
-    ret[np].step = ret[p].step + 1;
-    while(p&&!ret[p].go[w]) {
-        ret[p].go[w] = np;
-        p = ret[p].pre;
+    step[np] = step[p] + 1;
+    while(p&&!go[p][w]) {
+        go[p][w] = np;
+        p = pre[p];
     }
     if(p == 0) {
-        ret[np].pre = rt;
+        pre[np] = rt;
     }
     else {
-        int q = ret[p].go[w];
-        if(ret[p].step+1 == ret[q].step) {
-            ret[np].pre = q;
+        int q = go[p][w];
+        if(step[p]+1 == step[q]) {
+            pre[np] = q;
         }
         else {
             int nq = cur ++;
-            memcpy(ret[nq].go, ret[q].go, sizeof(ret[q].go));
-            ret[nq].step = ret[p].step + 1;
-            ret[nq].pre = ret[q].pre;
-            ret[q].pre = nq;
-            ret[np].pre = nq;
-            while(p&&ret[p].go[w] == q) {
-                ret[p].go[w] = nq;
-                p = ret[p].pre;
+            memcpy(go[nq], go[q], sizeof(go[q]));
+            step[nq] = step[p] + 1;
+            pre[nq] = pre[q];
+            pre[q] = nq;
+            pre[np] = nq;
+            while(p&&go[p][w] == q) {
+                go[p][w] = nq;
+                p = pre[p];
             }
         }
     }
@@ -74,19 +71,19 @@ int main() {
     int p = rt;
     for(int i = 0; i < m; ++ i) {
         int x = a[i]-'a';
-        if(ret[p].go[x]) {
+        if(go[p][x]) {
             len ++;
-            p = ret[p].go[x];
+            p = go[p][x];
         } 
         else {
-            while(p&&!ret[p].go[x]) p = ret[p].pre;
+            while(p&&!go[p][x]) p = pre[p];
             if(!p) {
                 p = rt;
                 len = 0;
             }
             else {
-                len = ret[p].step+1;
-                p = ret[p].go[x];
+                len = step[p]+1;
+                p = go[p][x];
             }
         }
         res = max(res, len);
