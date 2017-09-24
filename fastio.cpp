@@ -8,34 +8,65 @@
     Descripttion：fast io
    
 *************************************************************/
+const int MAXBUF = 10000;
+char buf[MAXBUF], *ps = buf, *pe = buf+1;
+inline void rnext()
+{
+    if(++ps == pe)
+        pe = (ps = buf)+fread(buf,sizeof(char),sizeof(buf)/sizeof(char),stdin);
+}
 
-#include <iostream>
-namespace fastIO {
-	#define BUF_SIZE 100000
-	//fread -> read
-	bool IOerror = 0;
-	inline char nc() {
-		static char buf[BUF_SIZE], *p1 = buf + BUF_SIZE, *pend = buf + BUF_SIZE;
-		if(p1 == pend) {
-			p1 = buf;
-			pend = buf + fread(buf, 1, BUF_SIZE, stdin);
-			if(pend == p1) {
-				IOerror = 1;
-				return -1;
-			}
-		}
-		return *p1++;
-	}
-	inline bool blank(char ch) {
-		return ch == ' ' || ch == '\n' || ch == '\r' || ch == '\t';
-	}
-	inline void read(int &x) {
-		char ch;
-		while(blank(ch = nc()));
-		if(IOerror)
-			return;
-		for(x = ch - '0'; (ch = nc()) >= '0' && ch <= '9'; x = x * 10 + ch - '0');
-	}
-	#undef BUF_SIZE
-};
-using namespace fastIO;
+template <class T>
+inline bool in(T &ans)
+{
+    ans = 0;
+    T f = 1;
+    if(ps == pe) return false;//EOF
+    do{
+        rnext();
+        if('-' == *ps) f = -1;
+    }while(!isdigit(*ps) && ps != pe);
+    if(ps == pe) return false;//EOF
+    do
+    {
+        ans = (ans<<1)+(ans<<3)+*ps-48;
+        rnext();
+    }while(isdigit(*ps) && ps != pe);
+    ans *= f;
+    return true;
+}
+
+const int  MAXOUT=10000;
+char bufout[MAXOUT], outtmp[50],*pout = bufout, *pend = bufout+MAXOUT;
+inline void write()
+{
+    fwrite(bufout,sizeof(char),pout-bufout,stdout);
+    pout = bufout;
+}
+inline void out_char(char c){ *(pout++) = c;if(pout == pend) write();}
+inline void out_str(char *s)
+{
+    while(*s)
+    {
+        *(pout++) = *(s++);
+        if(pout == pend) write();
+    }
+}
+template <class T>
+inline void out_int(T x) {
+    if(!x)
+    {
+        out_char('0');
+        return;
+    }
+    if(x < 0) x = -x,out_char('-');
+    int len = 0;
+    while(x)
+    {
+        outtmp[len++] = x%10+48;
+        x /= 10;
+    }
+    outtmp[len] = 0;
+    for(int i = 0, j = len-1; i < j; i++,j--) swap(outtmp[i],outtmp[j]);
+    out_str(outtmp);
+}
